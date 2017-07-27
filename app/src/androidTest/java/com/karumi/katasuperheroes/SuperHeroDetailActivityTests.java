@@ -40,6 +40,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.unregisterIdlingResources;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -75,54 +76,27 @@ import static org.mockito.Mockito.when;
   }
 
   @Test public void showsSuperHeroNameAsToolbarTitle() {
-    SuperHero superHero = givenThereIsASuperHero();
 
-    startActivity(superHero);
+      SuperHero superHero = givenThereIsASuperHero();
 
-    onToolbarWithTitle(superHero.getName()).check(matches(isDisplayed()));
+      startActivity(superHero);
+
+      onView(withId(R.id.toolbar)).check(matches(hasDescendant(withText(superHero.getName()))));
   }
 
   @Test public void hidesProgressBarOnSuperHeroLoaded() {
-    SuperHero superHero = givenThereIsASuperHero();
-
-    startActivity(superHero);
-
-    onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
   }
 
   @Test public void showsSuperHeroName() {
-    SuperHero superHero = givenThereIsASuperHero();
-
-    startActivity(superHero);
-    scrollToView(R.id.tv_super_hero_name);
-
-    onView(allOf(withId(R.id.tv_super_hero_name), withText(superHero.getName()))).check(
-        matches(isDisplayed()));
   }
 
   @Test public void showsSuperHeroDescription() {
-    SuperHero superHero = givenThereIsASuperHero();
-
-    startActivity(superHero);
-    scrollToView(R.id.tv_super_hero_description);
-
-    onView(withText(superHero.getDescription())).check(matches(isDisplayed()));
   }
 
   @Test public void doesNotShowAvengersBadgeIfSuperHeroIsNotPartOfTheAvengersTeam() {
-    SuperHero superHero = givenThereIsASuperHero(false);
-
-    startActivity(superHero);
-
-    onView(withId(R.id.iv_avengers_badge)).check(matches(not(isDisplayed())));
   }
 
   @Test public void showsAvengersBadgeIfSuperHeroIsPartOfTheAvengersTeam() {
-    SuperHero superHero = givenAnAvenger();
-
-    startActivity(superHero);
-
-    onView(withId(R.id.iv_avengers_badge)).check(matches(isDisplayed()));
   }
 
   private SuperHero givenThereIsASuperHero() {
