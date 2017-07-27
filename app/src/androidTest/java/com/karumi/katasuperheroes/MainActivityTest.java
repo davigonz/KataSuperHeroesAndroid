@@ -72,6 +72,15 @@ public class MainActivityTest {
     SuperHeroesRepository repository;
 
     @Test
+    public void doesNotShowEmptyCaseIfThereAreSuperHeroes() {
+        givenThereAreSomeSuperHeroes();
+
+        startActivity();
+
+        onView(withText("¯\\_(ツ)_/¯")).check(matches(not(isDisplayed())));
+    }
+
+    @Test
     public void showsEmptyCaseIfThereAreNoSuperHeroes() {
         givenThereAreNoSuperHeroes();
 
@@ -81,18 +90,12 @@ public class MainActivityTest {
     }
 
     @Test
-    public void notShowsEmptyCaseIfThereAreSuperHeroes() {
+    /*
+     * It's not going to work
+     */
+    public void doesNotShowProgressBarIfThereAreSuperHeroes() {
+
         givenThereAreSomeSuperHeroes();
-
-        startActivity();
-
-        onView(withText("¯\\_(ツ)_/¯")).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    public void notShowsProgressBarIfThereAreNoSuperHeroes() {
-
-        givenThereAreNoSuperHeroes();
 
         startActivity();
 
@@ -102,7 +105,7 @@ public class MainActivityTest {
     @Test
     public void showsProgressBarIfThereAreNoSuperHeroes() {
 
-        givenThereAreSomeSuperHeroes();
+        givenThereAreNoSuperHeroes();
 
         startActivity();
 
