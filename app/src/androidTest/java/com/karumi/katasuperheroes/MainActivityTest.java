@@ -17,14 +17,17 @@
 package com.karumi.katasuperheroes;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.view.View;
 
 import com.karumi.katasuperheroes.di.MainComponent;
 import com.karumi.katasuperheroes.di.MainModule;
 import com.karumi.katasuperheroes.model.SuperHero;
 import com.karumi.katasuperheroes.model.SuperHeroesRepository;
+import com.karumi.katasuperheroes.recyclerview.RecyclerViewInteraction;
 import com.karumi.katasuperheroes.ui.view.MainActivity;
 
 import org.junit.Rule;
@@ -33,13 +36,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -91,7 +94,7 @@ public class MainActivityTest {
 
     @Test
     /*
-     * It's not going to work
+     * It's not going to work due to Expresso way of working
      */
     public void doesNotShowProgressBarIfThereAreSuperHeroes() {
 
@@ -112,15 +115,44 @@ public class MainActivityTest {
         onView(withId(R.id.progress_bar)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void showSuperHeroesNamesIfThereAreSuperHeroes() {
+
+        List<SuperHero> superHeroes = givenThereAreSomeSuperHeroes();
+
+        startActivity();
+
+        RecyclerViewInteraction<SuperHero> recyclerViewInteraction = RecyclerViewInteraction.
+                onRecyclerView(withId(R.id.recycler_view));
+
+        recyclerViewInteraction
+                .withItems(superHeroes)
+                .check(new RecyclerViewInteraction.ItemViewAssertion<SuperHero>() {
+                    @Override
+                    public void check(SuperHero superHero, View view, NoMatchingViewException e) {
+
+                        matches(hasDescendant(withText(superHero.getName()))).check(view, e);
+                    }
+                });
+    }
+
     private void givenThereAreNoSuperHeroes() {
         List<SuperHero> emptyList = new ArrayList<>();
         when(repository.getAll()).thenReturn(emptyList);
     }
 
-    private void givenThereAreSomeSuperHeroes() {
+    private List<SuperHero> givenThereAreSomeSuperHeroes() {
+
         List<SuperHero> list = new ArrayList<>();
-        list.add(new SuperHero("Batman", null, false, "The Gotham hero"));
+
+        for (int i = 0; i < 10; i++) {
+
+            list.add(new SuperHero("name " + i, null, false, "desc " + i));
+        }
+
         when(repository.getAll()).thenReturn(list);
+
+        return list;
     }
 
     private MainActivity startActivity() {
